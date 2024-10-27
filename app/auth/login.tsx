@@ -4,6 +4,7 @@ import React from 'react'
 import { Link } from 'expo-router';
 
 const login = () => {
+
     return (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -36,12 +37,10 @@ const login = () => {
             />
     
             {/* Login button */}
-            {/* <Pressable
-              onPress={handleLogin}
-              style={[styles.btn, { marginTop: error ? 10 : 20 }]}>
+            <Pressable style={[styles.btn, { marginTop: 20 }]}>
               <Icon name="login-variant" size={25} style={{ marginTop: 10, marginRight: 0 }} color="black" />
               <Text style={styles.btnText}>Login</Text>
-            </Pressable> */}
+            </Pressable>
     
             {/* Face ID button */}
             <Pressable
@@ -51,7 +50,7 @@ const login = () => {
             </Pressable>
     
     
-            {/* Face ID button */}
+            {/* Voice ID button */}
             <Pressable
               style={[styles.btn, { marginTop: 20, marginBottom: 25 }]}>
               <Icon name="account-voice" size={25} style={{ marginTop: 10, marginRight: 0 }} color="black" />

@@ -1,9 +1,12 @@
 import { Tabs } from 'expo-router';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function DoctorLayout() {
   return (
-   <Tabs
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+      <Tabs
    screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
           let iconName = '';
@@ -32,5 +35,8 @@ export default function DoctorLayout() {
         name="patients"
       />
    </Tabs>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
+

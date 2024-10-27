@@ -21,11 +21,6 @@ const signup = () => {
     
             {/* Name */}
             <TextInput
-            //   value={name}
-            //   onChangeText={text => {
-            //     setError('');
-            //     setName(text);
-            //   }}
               placeholderTextColor={'#AEAEAE'}
               placeholder="Name"
               style={styles.input}
@@ -33,12 +28,7 @@ const signup = () => {
     
             {/* Email */}
             <TextInput
-            //   value={email}
               keyboardType="email-address"
-              onChangeText={text => {
-                // setError('');
-                // setEmail(text);
-              }}
               placeholderTextColor={'#AEAEAE'}
               placeholder="Email"
               style={styles.input}
@@ -46,11 +36,6 @@ const signup = () => {
     
             {/* Password */}
             <TextInput
-            //   value={password}
-              onChangeText={text => {
-                // setError('');
-                // setPassword(text);
-              }}
               placeholderTextColor={'#AEAEAE'}
               placeholder="Password"
               secureTextEntry
@@ -60,25 +45,16 @@ const signup = () => {
             {/* Repeat password */}
             <TextInput
               secureTextEntry
-            //   value={repeatPassword}
-              onChangeText={text => {
-                // setError('');
-                // setRepeatPassword(text);
-              }}
               placeholderTextColor={'#AEAEAE'}
               placeholder="Repeat Password"
               style={styles.input}
             />
     
-            {/* Validation error */}
-            {/* {error ? <Text style={styles.errorText}>{error}</Text> : null} */}
-    
             {/* Signup button */}
-            {/* <Pressable
-              onPress={handleSignup}
-              style={[styles.btn, { marginTop: error ? 10 : 20 }]}>
+            <Pressable
+              style={[styles.btn, { marginTop: 20 }]}>
               <Text style={styles.btnText}>Sign Up</Text>
-            </Pressable> */}
+            </Pressable>
     
             {/* Login navigation */}
             <Pressable

@@ -9,12 +9,8 @@ export default function dashboard() {
   const userCategory = "doctor";
   const { height: screenHeight } = Dimensions.get('window');
 
-  const [isAddPatientModalVisible, setAddPatientModalVisible] = useState(false);
-  const [isAddMedicineModalVisible, setAddMedicineModalVisible] = useState(false);
-  const [isAddGameCategoryModalVisible, setAddGameCategoryModalVisible] = useState(false);
-
-      // Function to handle opening the add patient modal
-      const openAddPatientModal = () => {
+    // Function to handle opening the add patient modal
+    const openAddPatientModal = () => {
         //setAddPatientModalVisible(true);
     };
 
@@ -29,24 +25,20 @@ export default function dashboard() {
     }
 
   return (
-    <LinearGradient
+            <LinearGradient
             colors={['#C485F7', '#C485F7', '#9459C6', '#9459C6', '#38006b']} // Adjust colors to match your design
             style={styles.backgroundGradient}
         >
              <ScrollView stickyHeaderIndices={[0]}>
              <View style={styles.stickyHeader}>
-                    {//profile && 
-                    (
-                        <View style={styles.userContainer}>
+                    <View style={styles.userContainer}>
                             <Text style={styles.header}>Welcome {userCategory}!</Text>
                             <Text style={styles.userDetails}>How are you doing today ?</Text>
-                            {/* <Text style={styles.userDetails}></Text> */}
-                        </View>
-                    )}
+                    </View>
                 </View>
 
              <Text style={styles.header}>Add Medicine</Text>
-                <TouchableOpacity onPress={() => setAddMedicineModalVisible(true)} style={styles.card}>
+                <TouchableOpacity style={styles.card}>
                     <Image source={require('@/assets/doctor/add_medicine.png')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
                         {/* <Text style={styles.cardTitle}>Add Medicine</Text> */}
@@ -64,7 +56,7 @@ export default function dashboard() {
                 </TouchableOpacity>
 
                 <Text style={styles.header}>Add Game Category</Text>
-                <TouchableOpacity onPress={() => setAddGameCategoryModalVisible(true)} style={styles.card}>
+                <TouchableOpacity style={styles.card}>
                     <Image source={require('@/assets/doctor/add_category.png')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
 
@@ -73,7 +65,7 @@ export default function dashboard() {
                 </TouchableOpacity>
 
                 <Text style={styles.header}>Add Game</Text>
-                <TouchableOpacity onPress={() => setAddGameCategoryModalVisible(true)} style={styles.card}>
+                <TouchableOpacity style={styles.card}>
                     <Image source={require('@/assets/doctor/add_game.png')} style={styles.cardImage} />
                     <View style={styles.cardContent}>
 

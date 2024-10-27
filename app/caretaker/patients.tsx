@@ -2,7 +2,6 @@ import { StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity } from 'r
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {LinearGradient} from 'expo-linear-gradient'
 import React, {useState} from 'react'
-import PatientCard from '@/components/PatientCard'
 
 export default function patients() {
   const [searchText, setSearchText] = useState('');
@@ -33,7 +32,12 @@ export default function patients() {
             </View>
 
             <View style={styles.patientList}>
-                <PatientCard></PatientCard>
+                {/* <FlatList
+                    data={patientList}
+                    renderItem={renderPatientSearchEntry}
+                    keyExtractor={(item) => item._id.toString()}
+
+                /> */}
             </View>
     </LinearGradient>
   )
