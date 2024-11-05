@@ -1,8 +1,17 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useContext } from "react";
+import { AuthContext } from "@/context/authContext";
 
 export default function CareTakerLayout() {
+  const { state } = useContext(AuthContext);
+
+  // Redirect to login if user did not login
+  if (!state.user) {
+    return <Redirect href="/" />;
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
@@ -13,8 +22,10 @@ export default function CareTakerLayout() {
               let rn = route.name;
               if (rn === "dashboard") {
                 iconName = focused ? "home" : "home-outline";
+              } else if (rn === "profile") {
+                iconName = focused ? "person" : "person-outline";
               } else {
-                iconName = focused ? "accessibility" : "accessibility-outline";
+                iconName = focused ? "people" : "people-outline";
               }
               return <Ionicons name={iconName} size={size} color={color} />;
             },
@@ -27,6 +38,7 @@ export default function CareTakerLayout() {
             },
           })}
         >
+          <Tabs.Screen name="profile" />
           <Tabs.Screen name="dashboard" />
           <Tabs.Screen name="patients" />
         </Tabs>

@@ -1,8 +1,17 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { useContext } from "react";
+import { AuthContext } from "@/context/authContext";
 
 export default function PatientLayout() {
+  const { state } = useContext(AuthContext);
+
+  // Redirect to login if user did not login
+  if (!state.user) {
+    return <Redirect href="/" />;
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
@@ -35,11 +44,11 @@ export default function PatientLayout() {
             },
           })}
         >
+          <Tabs.Screen name="profile" />
           <Tabs.Screen name="gameHub" />
           <Tabs.Screen name="journey" />
           <Tabs.Screen name="zen" />
           <Tabs.Screen name="log" />
-          <Tabs.Screen name="profile" />
         </Tabs>
       </SafeAreaView>
     </SafeAreaProvider>

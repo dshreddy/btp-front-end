@@ -48,7 +48,7 @@ const login = () => {
       setState(data);
 
       alert(data && data.message);
-      router.push(`${role}`);
+      router.replace(`${role}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         alert(error.response?.data?.message || "An error occurred");

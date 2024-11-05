@@ -1,47 +1,37 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/authContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useContext } from "react";
 import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "@/context/authContext";
 
 export default function Index() {
   const router = useRouter();
+  //global state
+  const { state } = useContext(AuthContext);
 
-  // Redirect to respective screen if user has logged in previously
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     try {
-  //       let data = await AsyncStorage.getItem("@auth");
-  //       const loginData = data ? JSON.parse(data) : null;
-  //       const role = await AsyncStorage.getItem("role");
-
-  //       if (loginData?.token && role) {
-  //         // Decode the JWT token
-  //         const decoded = jwtDecode(loginData.token);
-  //         const currentTime = Date.now() / 1000;
-
-  //         if (decoded.exp > currentTime) {
-  //           // Token is valid, redirect to the respective dashboard
-  //           router.replace(`/auth/testHome`);
-  //         } else {
-  //           // Token expired, go to login
-  //           router.replace("/");
-  //         }
-  //       } else {
-  //         // Missing token or role, go to login
-  //         router.replace("/");
-  //       }
-  //     } catch (error) {
-  //       router.replace("/");
-  //     }
-  //   };
-  //   checkAuth();
-  // }, []);
+  //Redirect to respective screen if user has logged in previously
+  const checkAuth = async () => {
+    try {
+      const role = await AsyncStorage.getItem("role");
+      //auth condition true false
+      const authenticatedUser = state?.user && state?.token !== "" && role;
+      if (authenticatedUser) {
+        // Decode the JWT token
+        const decoded = jwtDecode(state.token);
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp > currentTime) {
+          // Token is valid, redirect to the respective dashboard
+          router.replace(`${role}`);
+        }
+      }
+    } catch (error) {}
+  };
+  checkAuth();
 
   const onPress = async (category: string) => {
     await AsyncStorage.setItem("role", category);
-    router.push({ pathname: "/auth/login", params: { role: category } });
+    router.push("/auth/login");
   };
 
   return (

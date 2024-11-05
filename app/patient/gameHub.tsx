@@ -1,14 +1,10 @@
 import { View, Text } from "react-native";
-import React, { useContext } from "react";
-import { AuthContext } from "@/context/authContext";
+import React from "react";
 
 const GameHub = () => {
-  const { state } = useContext(AuthContext);
-
   return (
     <View>
       <Text>GameHub</Text>
-      <Text>{JSON.stringify(state)}</Text>
     </View>
   );
 };
