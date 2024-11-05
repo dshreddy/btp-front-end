@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.sai_hemanth_reddy.client"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +32,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "de62252c-10be-485b-86f9-bf2c68171e05"
+      }
     }
   }
 }

@@ -25,7 +25,7 @@ const AuthProvider = ({ children }) => {
 
   // Default axios setting
   axios.defaults.headers.common["Authorization"] = `Bearer ${state.token}`;
-  axios.defaults.baseURL = "http://10.128.6.142:8080/";
+  axios.defaults.baseURL = "https://mha-backend-peif.onrender.com/";
 
   return (
     <AuthContext.Provider value={{ state, setState }}>
