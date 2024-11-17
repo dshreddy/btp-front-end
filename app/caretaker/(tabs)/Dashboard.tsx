@@ -1,11 +1,10 @@
 import { View, Text } from "react-native";
-import React, { useContext } from "react";
-import { AuthContext } from "@/context/authContext";
+import React from "react";
 
 const Dashboard = () => {
   return (
     <View>
-      <Text>Dashboard</Text>
+      <Text>Caretaker dashboard</Text>
     </View>
   );
 };

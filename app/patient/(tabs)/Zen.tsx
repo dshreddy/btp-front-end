@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-const patients = () => {
+const Zen = () => {
   return (
     <View>
-      <Text>patients</Text>
+      <Text>zen</Text>
     </View>
   );
 };
 
-export default patients;
+export default Zen;
