@@ -1,61 +1,65 @@
+import React, { useContext, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
-  KeyboardAvoidingView,
   TextInput,
-  Pressable,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ActivityIndicator,
   Platform,
-  Alert,
   Image,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import React, { useContext, useState } from "react";
 import { Link } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 import { AuthContext } from "@/context/authContext";
 
-const login = () => {
+const Login = () => {
   const router = useRouter();
 
-  //global state
-  const { state, setState } = useContext(AuthContext);
+  // Global state
+  const { setState } = useContext(AuthContext);
 
-  // states
+  // States
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      const storedRole = await AsyncStorage.getItem("role");
+      setRole(storedRole);
+    };
+    fetchRole();
+  }, []);
 
   const handleLogIn = async () => {
-    const role = await AsyncStorage.getItem("role");
-
+    setLoading(true); // Start loading
     try {
-      setLoading(true);
       if (!email || !password) {
-        Alert.alert("Please Fill All Fields");
+        alert("Please fill in all fields.");
         setLoading(false);
         return;
       }
 
-      const { data } = await axios.post(`${role}/login`, {
-        email,
-        password,
-      });
+      const { data } = await axios.post(`${role}/login`, { email, password });
 
       await AsyncStorage.setItem("@auth", JSON.stringify(data));
       setState(data);
 
-      alert(data && data.message);
+      alert(data.message || "Login successful!");
       router.replace(`${role}`);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        alert(error.response?.data?.message || "An error occurred");
-      } else {
-        alert("An unexpected error occurred");
-      }
-      setLoading(false);
+      const errorMessage =
+        axios.isAxiosError(error) && error.response?.data?.message
+          ? error.response.data.message
+          : "An error occurred. Please try again.";
+      alert(errorMessage);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -72,64 +76,50 @@ const login = () => {
         <Text style={styles.appName}>Game Mind</Text>
         <Text style={styles.welcome}>Welcome to the world of healing</Text>
 
-        {/* Email */}
+        {/* Email Input */}
         <TextInput
-          placeholderTextColor={"#AEAEAE"}
-          placeholder="Email"
-          keyboardType="email-address"
-          autoComplete="email"
+          style={styles.input}
           value={email}
-          onChangeText={(text) => setEmail(text)}
-          style={styles.input}
+          onChangeText={setEmail}
+          placeholder="Enter your email"
+          placeholderTextColor="#AEAEAE"
+          keyboardType="email-address"
         />
 
-        {/* Password */}
+        {/* Password Input */}
         <TextInput
-          placeholderTextColor={"#AEAEAE"}
-          placeholder="Password"
           style={styles.input}
-          secureTextEntry={true}
-          autoComplete="password"
           value={password}
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={setPassword}
+          placeholder="Enter your password"
+          placeholderTextColor="#AEAEAE"
+          secureTextEntry
         />
 
-        {/* Login button */}
-        <Pressable
+        {/* Login Button */}
+        <TouchableOpacity
+          style={[styles.btn]}
           onPress={handleLogIn}
-          style={[styles.btn, { marginTop: 20 }]}
+          disabled={loading}
         >
-          <Icon
-            name="login-variant"
-            size={25}
-            style={{ marginTop: 10, marginRight: 0 }}
-            color="black"
-          />
-          <Text style={styles.btnText}>
-            {loading ? "Loggin in..." : "Login"}
-          </Text>
-        </Pressable>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.btnText}>Login</Text>
+          )}
+        </TouchableOpacity>
 
-        {/* Face ID button */}
-        <Pressable style={[styles.btn, { marginTop: 20 }]}>
-          <Icon
-            name="face-recognition"
-            size={25}
-            style={{ marginTop: 10, marginRight: 0 }}
-            color="black"
-          />
-          <Text style={styles.btnText}>Face ID</Text>
-        </Pressable>
-
-        {/* Sign up navigation */}
-        <Pressable style={styles.signUpContainer}>
-          <Text style={styles.noAccountLabel}>
-            Don't have an account?{"  "}
-            <Link href="/auth/signup">
-              <Text style={styles.signUpLabel}>Create an account</Text>
-            </Link>
-          </Text>
-        </Pressable>
+        {/* Conditionally render Sign Up Link */}
+        {role !== "patient" && (
+          <View style={styles.signUpContainer}>
+            <Text style={styles.noAccountLabel}>
+              Don't have an account?{" "}
+              <Link href="/auth/Signup">
+                <Text style={styles.signUpLabel}>Create an account</Text>
+              </Link>
+            </Text>
+          </View>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -237,4 +227,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default login;
+export default Login;

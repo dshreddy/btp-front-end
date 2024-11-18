@@ -31,7 +31,7 @@ export default function Index() {
 
   const onPress = async (category: string) => {
     await AsyncStorage.setItem("role", category);
-    router.push("/auth/login");
+    router.push("/auth/Login");
   };
 
   return (

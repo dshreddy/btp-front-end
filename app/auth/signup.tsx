@@ -1,57 +1,56 @@
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
-  KeyboardAvoidingView,
   TextInput,
-  Pressable,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ActivityIndicator,
   Platform,
   Image,
 } from "react-native";
 import { Link } from "expo-router";
-import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const signup = () => {
+const Signup = () => {
   const router = useRouter();
 
-  // states
+  // States
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
-    const role = await AsyncStorage.getItem("role");
-
     try {
-      setLoading(true);
+      setLoading(true); // Start loading
+
       if (!name || !email || !password) {
-        alert("Please Fill All Fields");
+        alert("Please fill in all fields.");
         setLoading(false);
         return;
       }
+
+      const role = await AsyncStorage.getItem("role");
       const { data } = await axios.post(`${role}/signup`, {
         name,
         email,
         password,
       });
 
-      alert(data.message);
-      setLoading(false);
-      // Navigate to login screen
-      router.push("/auth/login");
+      alert(data.message || "Signup successful!");
+      router.push("/auth/Login");
     } catch (error) {
-      // Check if the error is an instance of AxiosError (if using Axios)
-      if (axios.isAxiosError(error)) {
-        alert(error.response?.data?.message || "An error occurred");
-      } else {
-        alert("An unexpected error occurred");
-      }
-      setLoading(false);
-      console.log(error);
+      const errorMessage =
+        axios.isAxiosError(error) && error.response?.data?.message
+          ? error.response.data.message
+          : "An error occurred. Please try again.";
+      alert(errorMessage);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -68,56 +67,57 @@ const signup = () => {
         <Text style={styles.appName}>Game Mind</Text>
         <Text style={styles.welcome}>Welcome to the world of healing</Text>
 
-        {/* Name */}
+        {/* Name Input */}
         <TextInput
-          placeholderTextColor={"#AEAEAE"}
-          placeholder="Name"
           style={styles.input}
           value={name}
-          onChangeText={(text) => setName(text)}
+          onChangeText={setName}
+          placeholder="Enter your name"
+          placeholderTextColor="#AEAEAE"
         />
 
-        {/* Email */}
+        {/* Email Input */}
         <TextInput
-          placeholderTextColor={"#AEAEAE"}
-          placeholder="Email"
-          keyboardType="email-address"
-          autoComplete="email"
+          style={styles.input}
           value={email}
-          style={styles.input}
-          onChangeText={(text) => setEmail(text)}
+          onChangeText={setEmail}
+          placeholder="Enter your email"
+          placeholderTextColor="#AEAEAE"
+          keyboardType="email-address"
         />
 
-        {/* Password */}
+        {/* Password Input */}
         <TextInput
-          placeholderTextColor={"#AEAEAE"}
-          placeholder="Password"
           style={styles.input}
-          secureTextEntry={true}
-          autoComplete="password"
           value={password}
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={setPassword}
+          placeholder="Enter your password"
+          placeholderTextColor="#AEAEAE"
+          secureTextEntry
         />
 
-        {/* Signup button */}
-        <Pressable
+        {/* Signup Button */}
+        <TouchableOpacity
+          style={[styles.btn]}
           onPress={handleSignUp}
-          style={[styles.btn, { marginTop: 20 }]}
+          disabled={loading}
         >
-          <Text style={styles.btnText}>
-            {loading ? "Signing Up..." : "Sign Up"}
-          </Text>
-        </Pressable>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.btnText}>Sign Up</Text>
+          )}
+        </TouchableOpacity>
 
-        {/* Login navigation */}
-        <Pressable style={styles.loginContainer}>
-          <Text style={styles.haveAccountLabel}>
-            Already have an account?{"  "}
-            <Link href="/auth/login">
-              <Text style={styles.loginLabel}>Login</Text>
+        {/* Login Navigation */}
+        <View style={styles.signUpContainer}>
+          <Text style={styles.noAccountLabel}>
+            Already have an account?{" "}
+            <Link href="/auth/Login">
+              <Text style={styles.signUpLabel}>Login</Text>
             </Link>
           </Text>
-        </Pressable>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   appName: {
-    color: "rgba(134, 65, 244, 1)",
+    color: "#62a8c3",
     fontSize: 40,
     fontWeight: "bold",
     alignSelf: "center",
@@ -146,8 +146,10 @@ const styles = StyleSheet.create({
     height: 40,
     alignSelf: "center",
     borderRadius: 5,
+
     width: "80%",
     color: "#000000",
+
     marginTop: 10,
     shadowColor: "#000",
     shadowOffset: {
@@ -156,6 +158,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
+
     elevation: 1,
   },
   errorText: {
@@ -165,12 +168,16 @@ const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: "#ffffff",
-    padding: 10,
+    // padding: 10,
     height: 45,
+    flexDirection: "row",
+    justifyContent: "center",
+
     alignSelf: "center",
     borderRadius: 5,
     width: "80%",
-    marginTop: 10,
+    marginTop: 20,
+
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -178,18 +185,23 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
+
     elevation: 3,
   },
+  disabledButton: {
+    backgroundColor: "#ffffff",
+  },
   btnText: {
-    color: "#484848",
+    color: "#000",
     alignSelf: "center",
     fontWeight: "bold",
     fontSize: 18,
+    marginLeft: 8,
   },
-  loginContainer: {
-    marginTop: 60,
+  signUpContainer: {
+    marginTop: 80,
   },
-  haveAccountLabel: {
+  noAccountLabel: {
     color: "#484848",
     alignSelf: "center",
     fontWeight: "bold",
@@ -202,14 +214,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 15,
   },
-  loginLabel: {
+  signUpLabel: {
     color: "#1d9bf0",
   },
+  tinyLogo: {
+    width: 50,
+    height: 50,
+  },
   logo: {
-    width: 150,
-    height: 150,
+    width: 175,
+    height: 175,
     alignSelf: "center",
   },
 });
 
-export default signup;
+export default Signup;

@@ -1,6 +1,16 @@
-# Welcome to your Expo app 👋
+# Mental Helath App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Flow of app
+
+This starting point of app is at `index.tsx`, it initialises auth context & checks if role, user object, token are there not.
+If (all are there & token is valid) {takes to the concerned role's dashboard if it's valid}
+else { user needs to choose his role (which will be stored in AsyncStorage) & goes to `auth/login.tsx`, upon successful request the user object, token are stored in Asyncstoarge & login context is set}
+
+## Doctor
+
+3 screens -
+
+1. Profile screen
 
 ## Get started
 
@@ -16,35 +26,15 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
     npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Things stored in AsyncStorage
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+User object received from server
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+```js
+const { data } = await axios.post(`${role}/login`, {
+  email,
+  password,
+});
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+await AsyncStorage.setItem("@auth", JSON.stringify(data));
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

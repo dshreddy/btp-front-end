@@ -11,8 +11,8 @@ export default function AuthLayout() {
             headerShown: false,
           }}
         >
-          <Stack.Screen name="login" />
-          <Stack.Screen name="signup" />
+          <Stack.Screen name="Login" />
+          <Stack.Screen name="Signup" />
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>
