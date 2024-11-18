@@ -14,19 +14,14 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Patients = () => {
   const router = useRouter(); // Use Expo Router's useRouter hook
   const [searchText, setSearchText] = useState("");
   const [patients] = useState([
-    { id: "1", name: "John Doe", dob: "1987-05-15", gender: "Male" },
-    { id: "2", name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
-    { id: "3", name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
-    { id: "4", name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
-    { id: "5", name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
-    { id: "6", name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
-    { id: "7", name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
-    { id: "8", name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
+    { name: "John Doe", dob: "1987-05-15", gender: "Male" },
+    { name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
   ]);
 
   const filteredPatients = patients.filter((patient) =>
@@ -34,57 +29,59 @@ const Patients = () => {
   );
 
   return (
-    <View style={styles.container}>
-      {/* Search Bar */}
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search patients..."
-        value={searchText}
-        onChangeText={setSearchText}
-      />
+    <LinearGradient
+      colors={["#C485F7", "#C485F7", "#9459C6", "#9459C6", "#38006b"]} // Adjust colors to match your design
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        {/* Search Bar */}
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search patients..."
+          value={searchText}
+          onChangeText={setSearchText}
+        />
 
-      {/* Patient List */}
-      <FlatList
-        data={filteredPatients}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              router.push({
-                pathname: "/doctor/PatientDetails",
-                params: {
-                  id: item.id,
-                  name: item.name,
-                  dob: item.dob,
-                  gender: item.gender,
-                },
-              })
-            }
-          >
-            <Text style={styles.cardText}>
-              <Text style={styles.label}>Name:</Text> {item.name}
-            </Text>
-            <Text style={styles.cardText}>
-              <Text style={styles.label}>DOB:</Text> {item.dob}
-            </Text>
-            <Text style={styles.cardText}>
-              <Text style={styles.label}>Gender:</Text> {item.gender}
-            </Text>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={
-          <Text style={styles.noPatients}>No patients found.</Text>
-        }
-      />
-    </View>
+        {/* Patient List */}
+        <FlatList
+          data={filteredPatients}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() =>
+                router.push({
+                  pathname: "/doctor/PatientDetails",
+                  params: {
+                    name: item.name,
+                    dob: item.dob,
+                    gender: item.gender,
+                  },
+                })
+              }
+            >
+              <Text style={styles.cardText}>
+                <Text style={styles.label}>Name:</Text> {item.name}
+              </Text>
+              <Text style={styles.cardText}>
+                <Text style={styles.label}>DOB:</Text> {item.dob}
+              </Text>
+              <Text style={styles.cardText}>
+                <Text style={styles.label}>Gender:</Text> {item.gender}
+              </Text>
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={
+            <Text style={styles.noPatients}>No patients found.</Text>
+          }
+        />
+      </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
     padding: 20,
   },
   searchBar: {
