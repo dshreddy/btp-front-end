@@ -28,7 +28,7 @@ export default function Index() {
           router.replace(`${role}`);
         }
       }
-    } catch (error) { }
+    } catch (error) {}
   };
   checkAuth();
 
@@ -39,7 +39,7 @@ export default function Index() {
 
   return (
     <>
-      {isAuthenticated ?
+      {isAuthenticated ? (
         <View style={styles.mainContainer}>
           <Text style={styles.appName}>Game Mind</Text>
 
@@ -72,13 +72,11 @@ export default function Index() {
               source={require("@/assets/common/caretaker.jpg")}
             />
           </TouchableOpacity>
-        </View> :
+        </View>
+      ) : (
         <AppLock />
-      }
-
+      )}
     </>
-
-
   );
 }
 

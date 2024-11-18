@@ -12,7 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
 const PatientDetails = () => {
-  const params = useLocalSearchParams();
+  const patient = useLocalSearchParams();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "medicines", title: "Medicines" },
@@ -97,15 +97,19 @@ const PatientDetails = () => {
         <Text style={styles.headerText}>Patient Details</Text>
         <View style={styles.userInfoItem}>
           <Text style={styles.infoKey}>Name:</Text>
-          <Text style={styles.infoValue}>{params.name}</Text>
+          <Text style={styles.infoValue}>{patient.name}</Text>
         </View>
         <View style={styles.userInfoItem}>
           <Text style={styles.infoKey}>DOB:</Text>
-          <Text style={styles.infoValue}>{params.dob}</Text>
+          <Text style={styles.infoValue}>{patient.dob}</Text>
         </View>
         <View style={styles.userInfoItem}>
           <Text style={styles.infoKey}>Gender:</Text>
-          <Text style={styles.infoValue}>{params.gender}</Text>
+          <Text style={styles.infoValue}>{patient.gender}</Text>
+        </View>
+        <View style={styles.userInfoItem}>
+          <Text style={styles.infoKey}>Mobile:</Text>
+          <Text style={styles.infoValue}>{patient.mobile}</Text>
         </View>
       </View>
       <TabView
