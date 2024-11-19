@@ -5,13 +5,18 @@ import { useContext } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "@/context/authContext";
 import { BioAuthContext } from "@/context/bioAuthContext";
-import AppLock from "@/components/AppLock";
+import AppLock from "@/app/auth/AppLock";
+
 
 export default function Index() {
   const router = useRouter();
   //global state
   const { state } = useContext(AuthContext);
   const { isAuthenticated } = useContext(BioAuthContext);
+
+  if (!isAuthenticated) {
+    return <AppLock />
+  }
 
   //Redirect to respective screen if user has logged in previously
   const checkAuth = async () => {
@@ -38,45 +43,39 @@ export default function Index() {
   };
 
   return (
-    <>
-      {isAuthenticated ? (
-        <View style={styles.mainContainer}>
-          <Text style={styles.appName}>Game Mind</Text>
+    <View style={styles.mainContainer}>
+      <Text style={styles.appName}>Game Mind</Text>
 
-          <TouchableOpacity
-            style={styles.container}
-            onPress={() => onPress("doctor")}
-          >
-            <Image
-              style={styles.logo}
-              source={require("@/assets/common/doctor.jpg")}
-            />
-          </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => onPress("doctor")}
+      >
+        <Image
+          style={styles.logo}
+          source={require("@/assets/common/doctor.jpg")}
+        />
+      </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.container}
-            onPress={() => onPress("patient")}
-          >
-            <Image
-              style={styles.logo}
-              source={require("@/assets/common/patient.jpg")}
-            />
-          </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => onPress("patient")}
+      >
+        <Image
+          style={styles.logo}
+          source={require("@/assets/common/patient.jpg")}
+        />
+      </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.container}
-            onPress={() => onPress("caretaker")}
-          >
-            <Image
-              style={styles.logo}
-              source={require("@/assets/common/caretaker.jpg")}
-            />
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <AppLock />
-      )}
-    </>
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => onPress("caretaker")}
+      >
+        <Image
+          style={styles.logo}
+          source={require("@/assets/common/caretaker.jpg")}
+        />
+      </TouchableOpacity>
+    </View>
   );
 }
 
