@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,23 +6,40 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
-  Modal,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
+  ActivityIndicator,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
+import { AuthContext } from "@/context/authContext";
 
 const Patients = () => {
-  const router = useRouter(); // Use Expo Router's useRouter hook
+  const router = useRouter();
+  const { state } = useContext(AuthContext);
+  const [doctor] = useState(state.user);
   const [searchText, setSearchText] = useState("");
-  const [patients] = useState([
-    { name: "John Doe", dob: "1987-05-15", gender: "Male" },
-    { name: "Jane Smith", dob: "1993-03-10", gender: "Female" },
-  ]);
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPatients = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post("/doctor/getPatients", {
+        doctorId: doctor._id,
+      });
+      setPatients(response.data.patients || []);
+    } catch (error) {
+      alert("Failed to fetch patients. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPatients(); // Refetch patients when the tab is focused
+    }, []) // Empty dependency array ensures it only runs when the component is focused
+  );
 
   const filteredPatients = patients.filter((patient) =>
     patient.name.toLowerCase().includes(searchText.toLowerCase())
@@ -42,38 +59,38 @@ const Patients = () => {
           onChangeText={setSearchText}
         />
 
-        {/* Patient List */}
-        <FlatList
-          data={filteredPatients}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() =>
-                router.push({
-                  pathname: "/doctor/PatientDetails",
-                  params: {
-                    name: item.name,
-                    dob: item.dob,
-                    gender: item.gender,
-                  },
-                })
-              }
-            >
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Name:</Text> {item.name}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>DOB:</Text> {item.dob}
-              </Text>
-              <Text style={styles.cardText}>
-                <Text style={styles.label}>Gender:</Text> {item.gender}
-              </Text>
-            </TouchableOpacity>
-          )}
-          ListEmptyComponent={
-            <Text style={styles.noPatients}>No patients found.</Text>
-          }
-        />
+        {/* Loading Indicator */}
+        {loading ? (
+          <ActivityIndicator size="large" color="#fff" />
+        ) : (
+          <FlatList
+            data={filteredPatients}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() =>
+                  router.push({
+                    pathname: "/doctor/PatientDetails",
+                    params: item,
+                  })
+                }
+              >
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Name:</Text> {item.name}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>DOB:</Text> {item.dob}
+                </Text>
+                <Text style={styles.cardText}>
+                  <Text style={styles.label}>Gender:</Text> {item.gender}
+                </Text>
+              </TouchableOpacity>
+            )}
+            ListEmptyComponent={
+              <Text style={styles.noPatients}>No patients found.</Text>
+            }
+          />
+        )}
       </View>
     </LinearGradient>
   );
