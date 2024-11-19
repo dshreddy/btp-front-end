@@ -6,24 +6,27 @@ import { useRouter } from "expo-router";
 
 const AppLock = () => {
     const { setAuthenticated } = useContext(BioAuthContext);
-    const [isSupported, setIsSupported] = useState(true); //state that hold true if biometric sensor is there in the device 
+    const [isSupported, setIsSupported] = useState(false); // Starts as unsupported
+    const [checkedSupport, setCheckedSupport] = useState(false); // Indicates hardware check completed
     const router = useRouter();
 
     useEffect(() => {
-
         const checkForHardware = async () => {
             const supported = await LocalAuthentication.hasHardwareAsync();
             const isEnrolled = await LocalAuthentication.isEnrolledAsync();
             setIsSupported(supported && isEnrolled);
+            setCheckedSupport(true); // Hardware check completed
+        };
 
-            if (!isSupported) {
-                setAuthenticated(true);
-                router.replace("/"); // if biometic is not support route back to main page
-            }
-        }
-
-        checkForHardware(); // on loading the app check for hardware support for biometry 
+        checkForHardware();
     }, []);
+
+    useEffect(() => {
+        if (checkedSupport && !isSupported) {
+            setAuthenticated(true); // Authenticate if not supported
+            router.replace("/"); // Redirect to main page
+        }
+    }, [checkedSupport, isSupported, setAuthenticated, router]);
 
     const handleAuthentication = async () => {
         try {
@@ -33,12 +36,11 @@ const AppLock = () => {
             });
 
             if (result.success) {
-                await setAuthenticated(true);
-                // Use replace if there's no back navigation possible
+                setAuthenticated(true);
                 if (router.canGoBack()) {
-                    router.back(); // Go to the previous screen
+                    router.back();
                 } else {
-                    router.replace("/"); // Go to the main screen if no previous screen
+                    router.replace("/");
                 }
             } else {
                 Alert.alert("Failed", "Authentication failed.");
@@ -48,17 +50,27 @@ const AppLock = () => {
         }
     };
 
-    if (!isSupported) {
-        return null;
+    if (!checkedSupport) {
+        return (
+            <View style={styles.container}>
+                <Text>Checking for biometric hardware...</Text>
+            </View>
+        );
     }
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>App Locked</Text>
-            <Text style={styles.subtitle}>
-                Use fingerprint or Face ID to unlock.
-            </Text>
-            <Button title="Authenticate" onPress={handleAuthentication} />
+            {isSupported ? (
+                <>
+                    <Text style={styles.subtitle}>
+                        Use fingerprint or Face ID to unlock.
+                    </Text>
+                    <Button title="Authenticate" onPress={handleAuthentication} />
+                </>
+            ) : (
+                <Text style={styles.subtitle}>Biometric authentication not supported.</Text>
+            )}
         </View>
     );
 };
