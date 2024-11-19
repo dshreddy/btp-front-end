@@ -7,11 +7,15 @@ import {
   Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "@/context/authContext";
+import AddMedicineModal from "../../../components/AddMedineModal";
+import AddPatientModal from "../../../components/AddPatientModal";
 
 const Dashboard = () => {
   const { state } = useContext(AuthContext);
+  const [addMedicineModalVisible, setAddMedicineModalVisible] = useState(false);
+  const [addPatientModalVisible, setAddPatientModalVisible] = useState(false);
 
   return (
     <LinearGradient
@@ -29,7 +33,10 @@ const Dashboard = () => {
         </View>
 
         <Text style={styles.header}>Add Medicine</Text>
-        <TouchableOpacity onPress={() => {}} style={styles.card}>
+        <TouchableOpacity
+          onPress={() => setAddMedicineModalVisible(true)}
+          style={styles.card}
+        >
           <Image
             source={require("../../../assets/doctor/add_medicine.png")}
             style={styles.cardImage}
@@ -43,7 +50,10 @@ const Dashboard = () => {
         </TouchableOpacity>
 
         <Text style={styles.header}>Register Patient</Text>
-        <TouchableOpacity onPress={() => {}} style={styles.card}>
+        <TouchableOpacity
+          onPress={() => setAddPatientModalVisible(true)}
+          style={styles.card}
+        >
           <Image
             source={require("../../../assets/doctor/add_patient.png")}
             style={styles.cardImage}
@@ -54,6 +64,16 @@ const Dashboard = () => {
             </Text>
           </View>
         </TouchableOpacity>
+
+        <AddMedicineModal
+          visible={addMedicineModalVisible}
+          onClose={() => setAddMedicineModalVisible(false)}
+        />
+
+        <AddPatientModal
+          visible={addPatientModalVisible}
+          onClose={() => setAddPatientModalVisible(false)}
+        />
       </ScrollView>
     </LinearGradient>
   );
@@ -199,4 +219,34 @@ const styles = StyleSheet.create({
     height: 40,
     width: "100%",
   },
+  imagePickerButton: {
+    backgroundColor: "#4CAF50",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  imagePickerText: { fontSize: 16, color: "#fff", fontWeight: "bold" },
+  previewImage: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+  addButton: {
+    backgroundColor: "#4CAF50",
+    borderRadius: 8,
+    padding: 12,
+    alignItems: "center",
+  },
+  disabledButton: { backgroundColor: "#A5D6A7" },
+  addButtonText: { fontSize: 16, color: "#fff", fontWeight: "bold" },
+  cancelButton: {
+    backgroundColor: "#f44336",
+    borderRadius: 8,
+    padding: 12,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  cancelButtonText: { fontSize: 16, color: "#fff", fontWeight: "bold" },
 });
