@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,17 @@ import {
   FlatList,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
+  Image,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
 const PatientDetails = () => {
+  const router = useRouter();
   const patient = useLocalSearchParams();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -20,18 +25,79 @@ const PatientDetails = () => {
     { key: "activity", title: "Activity" },
   ]);
 
+  const [medicines, setMedicines] = useState([]);
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      var response = await axios.post("/patient/getMedicines", {
+        patientId: patient._id,
+      });
+      setMedicines(response.data.medicines || []);
+    } catch (error) {
+      alert("Failed to fetch medicines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+
+    setLoading(true);
+    try {
+      response = await axios.post("/patient/getGames", {
+        patientId: patient._id,
+      });
+      setGames(response.data.games || []);
+    } catch (error) {
+      alert("Failed to fetch games. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [patient._id]);
+
   // Medicines Tab Content
   const MedicinesTab = () => (
     <View style={styles.tabContainer}>
-      <FlatList
-        data={[]}
-        contentContainerStyle={styles.flatListContainer}
-        renderItem={({ item }) => <View></View>}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No medicines added.</Text>
-        }
-      />
-      <TouchableOpacity style={styles.addButton}>
+      {loading ? (
+        <ActivityIndicator size="large" color="#fff" />
+      ) : (
+        <FlatList
+          data={medicines}
+          contentContainerStyle={styles.flatListContainer}
+          renderItem={({ item }) => (
+            <View style={styles.medicineCard}>
+              <Text style={styles.medicineName}>{item.medicine.name}</Text>
+              {item.medicine.image && (
+                <Image
+                  source={{ uri: item.medicine.image }}
+                  style={styles.medicineImage}
+                />
+              )}
+              <Text>Start Date: {new Date(item.startDate).toDateString()}</Text>
+              <Text>End Date: {new Date(item.endDate).toDateString()}</Text>
+              <Text>{item.mealTime} meal</Text>
+              <Text>Dosage: {item.dosage}</Text>
+              <Text>Dosage Times: {item.dosageTimes.join(", ")}</Text>
+            </View>
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No medicines added.</Text>
+          }
+        />
+      )}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          router.push({
+            pathname: "/doctor/AddMedicine",
+            params: patient,
+          });
+        }}
+      >
         <Text style={styles.addButtonText}>+ Add Medicine</Text>
       </TouchableOpacity>
     </View>
@@ -41,9 +107,13 @@ const PatientDetails = () => {
   const GamesTab = () => (
     <View style={styles.tabContainer}>
       <FlatList
-        data={[]}
+        data={[games]}
         contentContainerStyle={styles.flatListContainer}
-        renderItem={({ item }) => <View></View>}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.name}</Text>
+          </View>
+        )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No games added.</Text>
         }
@@ -212,6 +282,9 @@ const styles = StyleSheet.create({
   indicator: {
     height: 1,
   },
+  medicineCard: { marginBottom: 10, padding: 10, backgroundColor: "#fff" },
+  medicineName: { fontSize: 16, fontWeight: "bold" },
+  medicineImage: { width: 50, height: 50, marginTop: 5 },
 });
 
 export default PatientDetails;

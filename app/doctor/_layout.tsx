@@ -21,6 +21,7 @@ export default function DoctorLayout() {
             name="PatientDetails"
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="AddMedicine" options={{ headerShown: false }} />
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>
