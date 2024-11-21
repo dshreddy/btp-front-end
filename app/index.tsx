@@ -7,7 +7,6 @@ import { AuthContext } from "@/context/authContext";
 import { BioAuthContext } from "@/context/bioAuthContext";
 import AppLock from "@/app/auth/AppLock";
 
-
 export default function Index() {
   const router = useRouter();
   //global state
@@ -15,7 +14,7 @@ export default function Index() {
   const { isAuthenticated } = useContext(BioAuthContext);
 
   if (!isAuthenticated) {
-    return <AppLock />
+    return <AppLock />;
   }
 
   //Redirect to respective screen if user has logged in previously
@@ -75,6 +74,10 @@ export default function Index() {
           source={require("@/assets/common/caretaker.jpg")}
         />
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => onPress("developer")}>
+        <Text style={styles.signUpLabel}>Login as developer</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -109,5 +112,11 @@ const styles = StyleSheet.create({
     height: 150,
     alignSelf: "center",
     alignItems: "center",
+  },
+  signUpLabel: {
+    color: "#1d9bf0",
+    alignSelf: "center",
+    fontWeight: "bold",
+    fontSize: 15,
   },
 });

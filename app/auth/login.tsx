@@ -115,7 +115,7 @@ const Login = () => {
             <Text style={styles.noAccountLabel}>
               Don't have an account?{" "}
               <Link href="/auth/Signup">
-                <Text style={styles.signUpLabel}>Create an account</Text>
+                <Text style={styles.signUpLabel}>Signup</Text>
               </Link>
             </Text>
           </View>
