@@ -81,7 +81,9 @@ const Login = () => {
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          placeholder="Enter your email"
+          placeholder={
+            role === "patient" ? "Enter your email" : "Enter your mobile number"
+          }
           placeholderTextColor="#AEAEAE"
           keyboardType="email-address"
         />

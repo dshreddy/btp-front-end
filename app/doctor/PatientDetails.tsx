@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Image,
   Modal,
+  ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
@@ -16,6 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import AddGameModal from "@/components/doctor/PatientDetails/AddGameModal";
+import { LineChart } from "react-native-chart-kit";
 
 const PatientDetails = () => {
   const router = useRouter();
@@ -29,30 +31,32 @@ const PatientDetails = () => {
 
   const [medicines, setMedicines] = useState([]);
   const [games, setGames] = useState([]);
+  const [activityData, setActivityData] = useState([]);
   const [isAddGameModalVisible, setIsAddGameModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      var response = await axios.post("/patient/getMedicines", {
+      // Fetch Medicines
+      let response = await axios.post("/patient/getMedicines", {
         patientId: patient._id,
       });
       setMedicines(response.data.medicines || []);
-    } catch (error) {
-      alert("Failed to fetch medicines. Please try again.");
-    } finally {
-      setLoading(false);
-    }
 
-    setLoading(true);
-    try {
+      // Fetch Games
       response = await axios.post("/patient/getGames", {
         patientId: patient._id,
       });
       setGames(response.data.games || []);
+
+      // Fetch Activity
+      response = await axios.post("/patient/getActivity", {
+        patientId: patient._id,
+      });
+      setActivityData(response.data.activity || []);
     } catch (error) {
-      alert("Failed to fetch games. Please try again.");
+      alert("Failed to fetch data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -144,9 +148,56 @@ const PatientDetails = () => {
   // Activity Tab Content
   const ActivityTab = () => (
     <View style={styles.tabContainer}>
-      <Text style={styles.emptyText}>
-        Activity report will be displayed here.
-      </Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#fff" />
+      ) : activityData.length > 0 ? (
+        <ScrollView contentContainerStyle={styles.scrollableContainer}>
+          {activityData.map((activity, index) => (
+            <View key={index} style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>{activity.gameName}</Text>
+              <LineChart
+                data={{
+                  labels: Array.from(
+                    { length: activity.scores.length },
+                    (_, i) => `${i + 1}`
+                  ),
+                  datasets: [
+                    {
+                      data: activity.scores,
+                    },
+                  ],
+                }}
+                width={Dimensions.get("window").width - 40}
+                height={220}
+                chartConfig={{
+                  backgroundColor: "#1E2923",
+                  backgroundGradientFrom: "#08130D",
+                  backgroundGradientTo: "#08130D",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+                  labelColor: (opacity = 1) =>
+                    `rgba(255, 255, 255, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  },
+                  propsForDots: {
+                    r: "4",
+                    strokeWidth: "2",
+                    stroke: "#ffa726",
+                  },
+                }}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 16,
+                }}
+              />
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
+        <Text style={styles.emptyText}>No activity data available.</Text>
+      )}
     </View>
   );
 
@@ -325,6 +376,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#333",
+  },
+  scrollableContainer: {
+    flexGrow: 1,
+    paddingVertical: 16,
+  },
+  chartContainer: {
+    marginBottom: 20,
+    paddingHorizontal: 16,
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+    textAlign: "center",
   },
 });
 

@@ -1,64 +1,47 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
+  ScrollView,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { AuthContext } from "@/context/authContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
 
 const Profile = () => {
   const router = useRouter();
   const { state, setState } = useContext(AuthContext);
-  const [name, setName] = useState(state?.user?.name || "");
-  const [email, setEmail] = useState(state?.user?.email || "");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [name] = useState(state?.user?.name || "");
+  const [mobile] = useState(state?.user?.mobile || "");
+  const [activityData, setActivityData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleUpdateProfile = async () => {
-    setIsLoading(true); // Start loading
+  const fetchActivity = async () => {
+    setLoading(true);
     try {
-      if (!name && !password) {
-        Alert.alert("Error", "Please fill in at least one field to update.");
-        setIsLoading(false); // Stop loading
-        return;
-      }
-      const role = await AsyncStorage.getItem("role");
-      const { data } = await axios.put(`${role}/update`, {
-        name,
-        password,
+      const response = await axios.post("/patient/getActivity", {
+        patientId: state?.user?._id,
       });
-
-      Alert.alert("Success", data.message || "Profile updated successfully!");
-      router.replace(`/`);
+      setActivityData(response.data.activity || []);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const statusCode = error.response?.status;
-        const serverMessage = error.response?.data?.message;
-        const additionalDetails = JSON.stringify(error.response?.data, null, 2);
-
-        Alert.alert(
-          "Profile Update Failed",
-          `Error: ${
-            serverMessage || "An unexpected error occurred."
-          }\n\nDetails:\n${additionalDetails}`
-        );
-      } else {
-        Alert.alert(
-          "Profile Update Failed",
-          "Unable to connect to the server."
-        );
-      }
+      alert("Failed to fetch activity data. Please try again.");
     } finally {
-      setIsLoading(false); // Stop loading
+      setLoading(false);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchActivity(); // Refetch activity when the tab is focused
+    }, []) // Empty dependency array ensures it only runs when the component is focused
+  );
 
   const handleLogout = async () => {
     setState({ token: "", user: null });
@@ -69,52 +52,77 @@ const Profile = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.header}>My Profile</Text>
 
       <View style={styles.form}>
         <Text style={styles.label}>Name</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, styles.disabledInput]}
           value={name}
-          onChangeText={(text) => setName(text)}
+          editable={false}
           placeholder="Enter your name"
         />
 
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.label}>Mobile</Text>
         <TextInput
           style={[styles.input, styles.disabledInput]}
-          value={email}
+          value={mobile}
           editable={false}
-          placeholder="Email address"
+          placeholder="Enter your mobile number"
         />
-
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          placeholder="Enter new password"
-          secureTextEntry
-        />
-
-        <TouchableOpacity
-          style={[styles.updateButton, isLoading && styles.disabledButton]}
-          onPress={handleUpdateProfile}
-          disabled={isLoading} // Disable button while loading
-        >
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Update Profile</Text>
-          )}
-        </TouchableOpacity>
       </View>
+
+      <Text style={styles.subHeader}>Activity Data</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#4CAF50" />
+      ) : (
+        activityData.map((activity, index) => (
+          <View key={index} style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>{activity.gameName}</Text>
+            <LineChart
+              data={{
+                labels: Array.from({ length: activity.scores.length }, (_, i) =>
+                  i === 0 ? `Attempt ${i + 1}` : `${i + 1}`
+                ),
+                datasets: [
+                  {
+                    data: activity.scores,
+                  },
+                ],
+              }}
+              width={Dimensions.get("window").width - 40}
+              height={220}
+              chartConfig={{
+                backgroundColor: "#1E2923",
+                backgroundGradientFrom: "#08130D",
+                backgroundGradientTo: "#08130D",
+                decimalPlaces: 0,
+                color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: "4",
+                  strokeWidth: "2",
+                  stroke: "#ffa726",
+                },
+              }}
+              bezier
+              style={{
+                marginVertical: 8,
+                borderRadius: 16,
+              }}
+            />
+          </View>
+        ))
+      )}
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -150,25 +158,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#eaeaea",
     color: "#999",
   },
-  updateButton: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  disabledButton: {
-    backgroundColor: "#a5d6a7", // Lighter green when disabled
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
+  subHeader: {
+    fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 10,
+  },
+  chartContainer: {
+    marginBottom: 20,
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+    textAlign: "center",
   },
   logoutButton: {
     backgroundColor: "#f44336",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 20,
   },
   logoutText: {
     color: "#fff",

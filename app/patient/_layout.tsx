@@ -20,6 +20,7 @@ export default function PatientLayout() {
           }}
         >
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="Game" />
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>
