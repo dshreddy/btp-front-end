@@ -27,6 +27,11 @@ const Patients = () => {
       const response = await axios.post("/doctor/getPatients", {
         doctorId: doctor._id,
       });
+      // response.data.patients.forEach((p, i) => {
+      //   p.medicines.forEach((m, i) => {
+      //     console.log(m.name);
+      //   });
+      // });
       setPatients(response.data.patients || []);
     } catch (error) {
       alert("Failed to fetch patients. Please try again.");

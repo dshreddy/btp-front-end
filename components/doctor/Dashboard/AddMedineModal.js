@@ -29,7 +29,6 @@ const AddMedicineModal = ({ visible, onClose }) => {
 
       if (!result.canceled) {
         setImage(result);
-        Alert.alert("Success", "Image selected successfully!");
       }
       onClose(); // Close modal
     } catch (error) {
@@ -57,8 +56,7 @@ const AddMedicineModal = ({ visible, onClose }) => {
 
       // Update local state with the updated user data
       setState((prevState) => ({ ...prevState, user: response.user }));
-
-      Alert.alert("Success", response.data.message || "Medicine added!");
+      onClose(); // Close modal
     } catch (error) {
       console.error("Error adding medicine:", error);
       Alert.alert(
