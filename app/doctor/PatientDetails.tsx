@@ -8,12 +8,14 @@ import {
   Dimensions,
   ActivityIndicator,
   Image,
+  Modal,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import AddGameModal from "@/components/doctor/PatientDetails/AddGameModal";
 
 const PatientDetails = () => {
   const router = useRouter();
@@ -27,6 +29,7 @@ const PatientDetails = () => {
 
   const [medicines, setMedicines] = useState([]);
   const [games, setGames] = useState([]);
+  const [isAddGameModalVisible, setIsAddGameModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -107,20 +110,34 @@ const PatientDetails = () => {
   const GamesTab = () => (
     <View style={styles.tabContainer}>
       <FlatList
-        data={[games]}
+        data={games}
         contentContainerStyle={styles.flatListContainer}
         renderItem={({ item }) => (
-          <View>
-            <Text>{item.name}</Text>
+          <View style={styles.card}>
+            <Image source={{ uri: item.logo }} style={styles.cardImage} />
+            <Text style={styles.cardText}>{item.name}</Text>
           </View>
         )}
+        keyExtractor={(item) => item._id} // Ensure each item has a unique key
         ListEmptyComponent={
           <Text style={styles.emptyText}>No games added.</Text>
         }
       />
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          setIsAddGameModalVisible(true);
+        }}
+      >
         <Text style={styles.addButtonText}>+ Add Game</Text>
       </TouchableOpacity>
+      <AddGameModal
+        patientId={patient._id}
+        visible={isAddGameModalVisible}
+        onClose={() => {
+          setIsAddGameModalVisible(false);
+        }}
+      />
     </View>
   );
 
@@ -285,6 +302,30 @@ const styles = StyleSheet.create({
   medicineCard: { marginBottom: 10, padding: 10, backgroundColor: "#fff" },
   medicineName: { fontSize: 16, fontWeight: "bold" },
   medicineImage: { width: 50, height: 50, marginTop: 5 },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 2,
+  },
+  cardImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 16,
+  },
+  cardText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
 });
 
 export default PatientDetails;
