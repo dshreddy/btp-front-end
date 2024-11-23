@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1037113477741",
+    "project_id": "btpexpopushnotifications",
+    "storage_bucket": "btpexpopushnotifications.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037113477741:android:5c06af0f53d5bdaa6ecd64",
+        "android_client_info": {
+          "package_name": "com.BTP.PushNotifications"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATKTZR0xregEyWNJImse-mW6ObM_KqZ6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037113477741:android:1177f49a5221535f6ecd64",
+        "android_client_info": {
+          "package_name": "com.sai_hemanth_reddy.client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATKTZR0xregEyWNJImse-mW6ObM_KqZ6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -15,8 +15,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import { AuthContext } from "@/context/authContext";
+import { usePushNotifications } from "@/components/usePushNotifications";
+
+
+const updatePatientDevice = async (patientId: any, deviceToken: string | undefined) => {
+  const response = await axios.post(`patient/updateDeviceToken`, { patientId, deviceToken });
+  console.log(response);
+}
 
 const Login = () => {
+
+  const { expoPushToken, notification } = usePushNotifications();
   const router = useRouter();
 
   // Global state
@@ -51,7 +60,18 @@ const Login = () => {
       setState(data);
 
       alert(data.message || "Login successful!");
+
+
+      if (role === "patient") {
+        let patientId = data._id;
+        console.log("patient Id: " + patientId);
+        let deviceToken = expoPushToken?.data;
+        console.log("device token: " + deviceToken);
+        updatePatientDevice(patientId, deviceToken);
+      }
+
       router.replace(`${role}`);
+
     } catch (error) {
       const errorMessage =
         axios.isAxiosError(error) && error.response?.data?.message
