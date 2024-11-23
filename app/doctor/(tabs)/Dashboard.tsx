@@ -9,8 +9,8 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useContext, useState } from "react";
 import { AuthContext } from "@/context/authContext";
-import AddMedicineModal from "../../../components/AddMedineModal";
-import AddPatientModal from "../../../components/AddPatientModal";
+import AddMedicineModal from "../../../components/doctor/Dashboard/AddMedineModal";
+import AddPatientModal from "../../../components/doctor/Dashboard/AddPatientModal";
 
 const Dashboard = () => {
   const { state } = useContext(AuthContext);

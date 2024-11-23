@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -12,12 +12,9 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import { useFocusEffect, useRouter } from "expo-router";
-import { AuthContext } from "@/context/authContext";
 
-const GameHub = () => {
+const Games = () => {
   const router = useRouter();
-  const { state, setState } = useContext(AuthContext);
-  const patientId = useState(state?.user?._id || "");
   const [games, setGames] = useState([]);
   const [filteredGames, setFilteredGames] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -25,9 +22,7 @@ const GameHub = () => {
 
   const fetchGames = async () => {
     try {
-      const response = await axios.post("/patient/getGames", {
-        patientId,
-      });
+      const response = await axios.post("/developer/getAllGames");
       setGames(response.data.games || []);
       setFilteredGames(response.data.games || []);
     } catch (error) {
@@ -60,7 +55,7 @@ const GameHub = () => {
       style={styles.card}
       onPress={() => {
         router.push({
-          pathname: "/patient/Game",
+          pathname: "/developer/Game",
           params: item,
         });
       }}
@@ -143,4 +138,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GameHub;
+export default Games;

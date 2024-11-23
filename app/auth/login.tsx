@@ -101,7 +101,9 @@ const Login = () => {
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          placeholder="Enter your email"
+          placeholder={
+            role === "patient" ? "Enter your email" : "Enter your mobile number"
+          }
           placeholderTextColor="#AEAEAE"
           keyboardType="email-address"
         />
@@ -135,7 +137,7 @@ const Login = () => {
             <Text style={styles.noAccountLabel}>
               Don't have an account?{" "}
               <Link href="/auth/Signup">
-                <Text style={styles.signUpLabel}>Create an account</Text>
+                <Text style={styles.signUpLabel}>Signup</Text>
               </Link>
             </Text>
           </View>

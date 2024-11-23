@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,21 @@ import {
   FlatList,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
+  Image,
+  Modal,
+  ScrollView,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from "axios";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import AddGameModal from "@/components/doctor/PatientDetails/AddGameModal";
+import { LineChart } from "react-native-chart-kit";
 
 const PatientDetails = () => {
+  const router = useRouter();
   const patient = useLocalSearchParams();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -20,18 +29,82 @@ const PatientDetails = () => {
     { key: "activity", title: "Activity" },
   ]);
 
+  const [medicines, setMedicines] = useState([]);
+  const [games, setGames] = useState([]);
+  const [activityData, setActivityData] = useState([]);
+  const [isAddGameModalVisible, setIsAddGameModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // Fetch Medicines
+      let response = await axios.post("/patient/getMedicines", {
+        patientId: patient._id,
+      });
+      setMedicines(response.data.medicines || []);
+
+      // Fetch Games
+      response = await axios.post("/patient/getGames", {
+        patientId: patient._id,
+      });
+      setGames(response.data.games || []);
+
+      // Fetch Activity
+      response = await axios.post("/patient/getActivity", {
+        patientId: patient._id,
+      });
+      setActivityData(response.data.activity || []);
+    } catch (error) {
+      alert("Failed to fetch data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [patient._id]);
+
   // Medicines Tab Content
   const MedicinesTab = () => (
     <View style={styles.tabContainer}>
-      <FlatList
-        data={[]}
-        contentContainerStyle={styles.flatListContainer}
-        renderItem={({ item }) => <View></View>}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No medicines added.</Text>
-        }
-      />
-      <TouchableOpacity style={styles.addButton}>
+      {loading ? (
+        <ActivityIndicator size="large" color="#fff" />
+      ) : (
+        <FlatList
+          data={medicines}
+          contentContainerStyle={styles.flatListContainer}
+          renderItem={({ item }) => (
+            <View style={styles.medicineCard}>
+              <Text style={styles.medicineName}>{item.medicine.name}</Text>
+              {item.medicine.image && (
+                <Image
+                  source={{ uri: item.medicine.image }}
+                  style={styles.medicineImage}
+                />
+              )}
+              <Text>Start Date: {new Date(item.startDate).toDateString()}</Text>
+              <Text>End Date: {new Date(item.endDate).toDateString()}</Text>
+              <Text>{item.mealTime} meal</Text>
+              <Text>Dosage: {item.dosage}</Text>
+              <Text>Dosage Times: {item.dosageTimes.join(", ")}</Text>
+            </View>
+          )}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No medicines added.</Text>
+          }
+        />
+      )}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          router.push({
+            pathname: "/doctor/AddMedicine",
+            params: patient,
+          });
+        }}
+      >
         <Text style={styles.addButtonText}>+ Add Medicine</Text>
       </TouchableOpacity>
     </View>
@@ -41,25 +114,90 @@ const PatientDetails = () => {
   const GamesTab = () => (
     <View style={styles.tabContainer}>
       <FlatList
-        data={[]}
+        data={games}
         contentContainerStyle={styles.flatListContainer}
-        renderItem={({ item }) => <View></View>}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Image source={{ uri: item.logo }} style={styles.cardImage} />
+            <Text style={styles.cardText}>{item.name}</Text>
+          </View>
+        )}
+        keyExtractor={(item) => item._id} // Ensure each item has a unique key
         ListEmptyComponent={
           <Text style={styles.emptyText}>No games added.</Text>
         }
       />
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          setIsAddGameModalVisible(true);
+        }}
+      >
         <Text style={styles.addButtonText}>+ Add Game</Text>
       </TouchableOpacity>
+      <AddGameModal
+        patientId={patient._id}
+        visible={isAddGameModalVisible}
+        onClose={() => {
+          setIsAddGameModalVisible(false);
+        }}
+      />
     </View>
   );
 
   // Activity Tab Content
   const ActivityTab = () => (
     <View style={styles.tabContainer}>
-      <Text style={styles.emptyText}>
-        Activity report will be displayed here.
-      </Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#fff" />
+      ) : activityData.length > 0 ? (
+        <ScrollView contentContainerStyle={styles.scrollableContainer}>
+          {activityData.map((activity, index) => (
+            <View key={index} style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>{activity.gameName}</Text>
+              <LineChart
+                data={{
+                  labels: Array.from(
+                    { length: activity.scores.length },
+                    (_, i) => `${i + 1}`
+                  ),
+                  datasets: [
+                    {
+                      data: activity.scores,
+                    },
+                  ],
+                }}
+                width={Dimensions.get("window").width - 40}
+                height={220}
+                chartConfig={{
+                  backgroundColor: "#1E2923",
+                  backgroundGradientFrom: "#08130D",
+                  backgroundGradientTo: "#08130D",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+                  labelColor: (opacity = 1) =>
+                    `rgba(255, 255, 255, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  },
+                  propsForDots: {
+                    r: "4",
+                    strokeWidth: "2",
+                    stroke: "#ffa726",
+                  },
+                }}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 16,
+                }}
+              />
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
+        <Text style={styles.emptyText}>No activity data available.</Text>
+      )}
     </View>
   );
 
@@ -211,6 +349,47 @@ const styles = StyleSheet.create({
   },
   indicator: {
     height: 1,
+  },
+  medicineCard: { marginBottom: 10, padding: 10, backgroundColor: "#fff" },
+  medicineName: { fontSize: 16, fontWeight: "bold" },
+  medicineImage: { width: 50, height: 50, marginTop: 5 },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 16,
+    marginVertical: 8,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 2,
+  },
+  cardImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 16,
+  },
+  cardText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  scrollableContainer: {
+    flexGrow: 1,
+    paddingVertical: 16,
+  },
+  chartContainer: {
+    marginBottom: 20,
+    paddingHorizontal: 16,
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+    textAlign: "center",
   },
 });
 
