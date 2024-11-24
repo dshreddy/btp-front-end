@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.sai_hemanth_reddy.client",
-      "googleServicesFile": "./android/app/google-service.json"
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "bundler": "metro",

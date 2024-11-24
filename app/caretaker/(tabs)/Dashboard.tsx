@@ -40,18 +40,8 @@ const Dashboard = () => {
   useFocusEffect(
     useCallback(() => {
       fetchPatients(); // Refetch patients when the tab is focused
-    }, []) // Empty dependency array ensures it only runs when the component is focused
+    }, [])
   );
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const formattedTime = date.toLocaleString('en-US', {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-    return formattedTime;
-  };
 
   const sendNotification = async (patient: never) => {
     try {
@@ -129,19 +119,33 @@ const Dashboard = () => {
 
                   {/* Medication card */}
                   <ScrollView style={styles.scrollView} showsVerticalScrollIndicator>
-                    <View style={styles.noMedicationContainer}>
-                      <Text style={{ color: 'white', alignSelf: 'center', fontSize: 16 }}>
-                        No medication information available!!!
-                      </Text>
-                    </View>
+                    {
+                      item.medicines && item.medicines.length > 0 ? (
+                        <View style={{ flexDirection: "column" }}>
+                          {item.medicines.map((med, index) => (
+                            <View key={index} style={styles.medicineCard}>
+                              <Text style={styles.medicineNameText}>
+                                {med.medicine?.name}
+                              </Text>
+                            </View>
+                          ))}
+                        </View>
+                      ) : (
+                        <View style={styles.noMedicationContainer}>
+                          <Text style={{ color: "white", alignSelf: "center", fontSize: 16 }}>
+                            No medication information available!!!
+                          </Text>
+                        </View>
+                      )
+                    }
                   </ScrollView>
+
                 </View>
               </TouchableOpacity>
             )}
             ListEmptyComponent={
               <Text style={styles.noPatients}>No patients found.</Text>
             }
-
           />
         )}
       </View>
@@ -150,6 +154,16 @@ const Dashboard = () => {
 };
 
 const styles = StyleSheet.create({
+  medicineCard: {
+    backgroundColor: "#fC27B0",
+    marginVertical: 5,
+    padding: 10,
+    borderRadius: 10,
+  },
+  medicineNameText: {
+    color: "white",
+    fontSize: 16,
+  },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
@@ -331,7 +345,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   scrollView: {
-    // You can set a maximum height to constrain the scroll view, if needed
     maxHeight: 300, // or whatever height you desire
   },
   noMedicationContainer: {
@@ -345,6 +358,7 @@ const styles = StyleSheet.create({
 
   notifyButton: {
     marginTop: 8,
+    marginRight: 8,
     padding: 10,
     backgroundColor: "#f50057",
     borderRadius: 8,

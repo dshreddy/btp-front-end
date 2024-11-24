@@ -19,13 +19,26 @@ import { usePushNotifications } from "@/components/usePushNotifications";
 
 
 const updatePatientDevice = async (patientId: any, deviceToken: string | undefined) => {
-  const response = await axios.post(`patient/updateDeviceToken`, { patientId, deviceToken });
-  console.log(response);
+  try {
+    const response = await axios.post(`patient/updateDeviceToken`, { patientId, deviceToken });
+  }
+  catch (error) {
+    const errorMessage =
+      axios.isAxiosError(error)
+        ? error.message
+        : "An error occurred. Please try again.";
+    alert(errorMessage);
+  }
+
 }
 
 const Login = () => {
+  let expoPushToken;
 
-  const { expoPushToken, notification } = usePushNotifications();
+  if (Platform.OS !== "web") {
+    const { expoPushToken: token } = usePushNotifications();
+    expoPushToken = token;
+  }
   const router = useRouter();
 
   // Global state
@@ -62,11 +75,9 @@ const Login = () => {
       alert(data.message || "Login successful!");
 
 
-      if (role === "patient") {
-        let patientId = data._id;
-        console.log("patient Id: " + patientId);
+      if (role === "patient" && Platform.OS !== "web") {
+        let patientId = data.user._id;
         let deviceToken = expoPushToken?.data;
-        console.log("device token: " + deviceToken);
         updatePatientDevice(patientId, deviceToken);
       }
 
