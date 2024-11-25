@@ -12,8 +12,6 @@ export default function PatientTabsLayout() {
             iconName = "person";
           } else if (route.name === "GameHub") {
             iconName = "game-controller";
-          } else if (route.name === "Journey") {
-            iconName = "map";
           } else if (route.name === "Zen") {
             iconName = "happy";
           }
@@ -29,7 +27,6 @@ export default function PatientTabsLayout() {
       })}
     >
       <Tabs.Screen name="GameHub" />
-      <Tabs.Screen name="Journey" />
       <Tabs.Screen name="Zen" />
       <Tabs.Screen name="Profile" />
     </Tabs>
