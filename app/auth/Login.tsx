@@ -15,8 +15,30 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import { AuthContext } from "@/context/authContext";
+import { usePushNotifications } from "@/components/usePushNotifications";
+
+
+const updatePatientDevice = async (patientId: any, deviceToken: string | undefined) => {
+  try {
+    const response = await axios.post(`patient/updateDeviceToken`, { patientId, deviceToken });
+  }
+  catch (error) {
+    const errorMessage =
+      axios.isAxiosError(error)
+        ? error.message
+        : "An error occurred. Please try again.";
+    alert(errorMessage);
+  }
+
+}
 
 const Login = () => {
+  let expoPushToken;
+
+  if (Platform.OS !== "web") {
+    const { expoPushToken: token } = usePushNotifications();
+    expoPushToken = token;
+  }
   const router = useRouter();
 
   // Global state
@@ -51,7 +73,16 @@ const Login = () => {
       setState(data);
 
       alert(data.message || "Login successful!");
+
+
+      if (role === "patient" && Platform.OS !== "web") {
+        let patientId = data.user._id;
+        let deviceToken = expoPushToken?.data;
+        updatePatientDevice(patientId, deviceToken);
+      }
+
       router.replace(`${role}`);
+
     } catch (error) {
       const errorMessage =
         axios.isAxiosError(error) && error.response?.data?.message

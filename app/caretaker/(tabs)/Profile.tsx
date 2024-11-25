@@ -11,6 +11,7 @@ import { AuthContext } from "@/context/authContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import axios from "axios";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Profile = () => {
   const router = useRouter();
@@ -61,8 +62,7 @@ const Profile = () => {
         const additionalDetails = JSON.stringify(error.response?.data, null, 2);
 
         alert(
-          `Error ${
-            statusCode || ""
+          `Error ${statusCode || ""
           }: ${serverMessage}\n\nDetails:\n${additionalDetails}`
         );
       } else {
@@ -82,59 +82,63 @@ const Profile = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>My Profile</Text>
+    <LinearGradient
+      colors={["#C485F7", "#C485F7", "#9459C6", "#9459C6", "#38006b"]} // Adjust colors to match your design
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        <Text style={styles.header}>My Profile</Text>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={(text) => setName(text)}
-          placeholder="Enter your name"
-        />
+        <View style={styles.form}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={(text) => setName(text)}
+            placeholder="Enter your name"
+          />
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={[styles.input, styles.disabledInput]}
-          value={email}
-          editable={false}
-          placeholder="Email address"
-        />
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={[styles.input, styles.disabledInput]}
+            value={email}
+            editable={false}
+            placeholder="Email address"
+          />
 
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          placeholder="Enter new password"
-          secureTextEntry
-        />
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            placeholder="Enter new password"
+            secureTextEntry
+          />
 
-        <TouchableOpacity
-          style={[styles.updateButton, isLoading && styles.disabledButton]}
-          onPress={handleUpdateProfile}
-          disabled={isLoading} // Disable button while loading
-        >
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Update Profile</Text>
-          )}
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.disabledButton]}
+            onPress={handleUpdateProfile}
+            disabled={isLoading} // Disable button while loading
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Update Profile</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+          <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
     padding: 20,
   },
   header: {
@@ -142,6 +146,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: "white",
   },
   form: {
     marginBottom: 30,
@@ -163,25 +168,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#eaeaea",
     color: "#999",
   },
-  updateButton: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
+  button: {
+    marginBottom: 8,
+    marginHorizontal: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 8,
-    alignItems: "center",
+    backgroundColor: "#6a1b9a", // Purple background color for the button
+    elevation: 2,
+    alignSelf: "stretch",
   },
   disabledButton: {
     backgroundColor: "#a5d6a7", // Lighter green when disabled
   },
   buttonText: {
+    fontSize: 18,
     color: "#fff",
-    fontSize: 16,
     fontWeight: "bold",
-  },
-  logoutButton: {
-    backgroundColor: "#f44336",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
+    textAlign: "center",
   },
   logoutText: {
     color: "#fff",
@@ -189,5 +193,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
 export default Profile;

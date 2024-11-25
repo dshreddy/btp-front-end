@@ -32,7 +32,7 @@ export default function Index() {
           router.replace(`${role}`);
         }
       }
-    } catch (error) {}
+    } catch (error) { }
   };
   checkAuth();
 
