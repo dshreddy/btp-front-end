@@ -51,6 +51,28 @@ const Games = () => {
     }
   };
 
+  const handleDeleteGame = async (gameId) => {
+    try {
+      const response = await axios.post(`/developer/deleteGame`, {
+        id: gameId,
+      });
+      if (response.data.success) {
+        setGames((prevGames) =>
+          prevGames.filter((game) => game._id !== gameId)
+        );
+        setFilteredGames((prevGames) =>
+          prevGames.filter((game) => game._id !== gameId)
+        );
+        alert("Game deleted successfully!");
+      } else {
+        alert("Failed to delete game. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+
   const renderGameCard = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.detailsContainer}>
@@ -70,14 +92,19 @@ const Games = () => {
         {/* Update Icon */}
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => alert("Update pressed for " + item.name)}
+          onPress={() =>
+            router.push({
+              pathname: "/developer/UpdateGame",
+              params: item,
+            })
+          }
         >
           <Ionicons name="create-outline" size={24} color="#4CAF50" />
         </TouchableOpacity>
         {/* Delete Icon */}
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => alert("Delete pressed for " + item.name)}
+          onPress={() => handleDeleteGame(item._id)}
         >
           <Ionicons name="trash-outline" size={24} color="#f44336" />
         </TouchableOpacity>

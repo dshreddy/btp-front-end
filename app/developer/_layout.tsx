@@ -10,6 +10,7 @@ export default function DeveloperLayout() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="Game" options={{ headerShown: false }} />
+          <Stack.Screen name="UpdateGame" options={{ headerShown: false }} />
         </Stack>
       </SafeAreaView>
     </SafeAreaProvider>

@@ -46,7 +46,12 @@ const Profile = () => {
 
   const handleLogout = async () => {
     const patientId = state?.user?._id || "";
-    await axios.post(`patient/removeDeviceToken`, { patientId });
+    try {
+      await axios.post(`patient/removeDeviceToken`, { patientId });
+    } catch (e) {
+      console.error(e);
+    }
+
     setState({ token: "", user: null });
     await AsyncStorage.removeItem("@auth");
     await AsyncStorage.removeItem("role");
