@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import { useFocusEffect, useRouter } from "expo-router";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Games = () => {
   const router = useRouter();
@@ -51,18 +52,37 @@ const Games = () => {
   };
 
   const renderGameCard = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => {
-        router.push({
-          pathname: "/developer/Game",
-          params: item,
-        });
-      }}
-    >
-      <Image source={{ uri: item.logo }} style={styles.gameImage} />
-      <Text style={styles.gameName}>{item.name}</Text>
-    </TouchableOpacity>
+    <View style={styles.card}>
+      <View style={styles.detailsContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            router.push({
+              pathname: "/developer/Game",
+              params: item,
+            });
+          }}
+        >
+          <Image source={{ uri: item.logo }} style={styles.gameImage} />
+          <Text>{item.name}</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.iconContainer}>
+        {/* Update Icon */}
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => alert("Update pressed for " + item.name)}
+        >
+          <Ionicons name="create-outline" size={24} color="#4CAF50" />
+        </TouchableOpacity>
+        {/* Delete Icon */}
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => alert("Delete pressed for " + item.name)}
+        >
+          <Ionicons name="trash-outline" size={24} color="#f44336" />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 
   return (
@@ -110,15 +130,6 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     marginBottom: 15,
   },
-  card: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    marginBottom: 10,
-    alignItems: "center",
-  },
   gameImage: {
     width: 100,
     height: 100,
@@ -135,6 +146,31 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     marginTop: 20,
+  },
+  iconContainer: {
+    flex: 1,
+    flexDirection: "column", // Arrange icons in a column
+    justifyContent: "space-evenly", // Space out the icons vertically
+    alignItems: "center", // Center align icons
+  },
+  iconButton: {
+    marginLeft: 10,
+    marginBottom: 10,
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    marginBottom: 10,
+    flexDirection: "row", // Arrange details and icons side by side
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  detailsContainer: {
+    flex: 2, // Take more space for details
+    flexDirection: "column", // Arrange name, dob, gender in a column
   },
 });
 

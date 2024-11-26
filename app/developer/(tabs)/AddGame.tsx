@@ -11,6 +11,7 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
+import { LinearGradient } from "expo-linear-gradient";
 
 const AddGame = () => {
   const [gameName, setGameName] = useState("");
@@ -85,49 +86,62 @@ const AddGame = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Add Game</Text>
+    <LinearGradient
+      colors={["#C485F7", "#9459C6", "#662F97"]}
+      style={styles.gradientBackground}
+    >
+      <View style={styles.container}>
+        <Text style={styles.header}>Add Game</Text>
 
-      {/* Game Name Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Game Name"
-        value={gameName}
-        onChangeText={setGameName}
-      />
-
-      {/* Upload Logo Button */}
-      <TouchableOpacity style={styles.uploadButton} onPress={handleUploadLogo}>
-        <Text style={styles.uploadButtonText}>Upload Logo</Text>
-      </TouchableOpacity>
-      {logo && (
-        <Image
-          source={{ uri: `data:image/png;base64,${logo}` }}
-          style={styles.logoPreview}
+        {/* Game Name Input */}
+        <TextInput
+          style={styles.input}
+          placeholder="Game Name"
+          value={gameName}
+          onChangeText={setGameName}
         />
-      )}
 
-      {/* Upload HTML File Button */}
-      <TouchableOpacity style={styles.uploadButton} onPress={handleUploadHtml}>
-        <Text style={styles.uploadButtonText}>Upload HTML File</Text>
-      </TouchableOpacity>
-      {htmlFile && (
-        <Text style={styles.fileName}>{htmlFile.assets[0].name}</Text>
-      )}
+        {/* Upload Logo Button */}
+        <TouchableOpacity
+          style={styles.uploadButton}
+          onPress={handleUploadLogo}
+        >
+          <Text style={styles.uploadButtonText}>Upload Logo</Text>
+        </TouchableOpacity>
+        {logo && (
+          <Image
+            source={{ uri: `data:image/png;base64,${logo}` }}
+            style={styles.logoPreview}
+          />
+        )}
 
-      {/* Add Game Button */}
-      <TouchableOpacity style={styles.addButton} onPress={handleAddGame}>
-        <Text style={styles.addButtonText}>Add Game</Text>
-      </TouchableOpacity>
-    </View>
+        {/* Upload HTML File Button */}
+        <TouchableOpacity
+          style={styles.uploadButton}
+          onPress={handleUploadHtml}
+        >
+          <Text style={styles.uploadButtonText}>Upload HTML File</Text>
+        </TouchableOpacity>
+        {htmlFile && (
+          <Text style={styles.fileName}>{htmlFile.assets[0].name}</Text>
+        )}
+
+        {/* Add Game Button */}
+        <TouchableOpacity style={styles.addButton} onPress={handleAddGame}>
+          <Text style={styles.addButtonText}>Add Game</Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  gradientBackground: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
   },
   header: {
     fontSize: 24,
@@ -136,23 +150,35 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
+    borderWidth: 2,
+    borderColor: "#9B72C1",
     borderRadius: 8,
     padding: 10,
     marginBottom: 20,
     fontSize: 16,
+    backgroundColor: "#fff",
+    marginHorizontal: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    alignSelf: "stretch",
+    alignItems: "center",
   },
   uploadButton: {
-    backgroundColor: "#6a1b9a",
+    borderWidth: 1,
+    borderColor: "#854CAD",
+    marginBottom: 10,
+    marginHorizontal: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 9,
     borderRadius: 8,
-    padding: 12,
+    backgroundColor: "#f0f0f0",
+    elevation: 2,
+    alignSelf: "stretch",
     alignItems: "center",
-    marginBottom: 15,
   },
   uploadButtonText: {
     fontSize: 16,
-    color: "#fff",
+    color: "#6a1b9a",
     fontWeight: "bold",
   },
   logoPreview: {
@@ -168,11 +194,18 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   addButton: {
-    backgroundColor: "#4CAF50",
+    borderWidth: 1,
+    borderColor: "#854CAD",
+    marginTop: 5,
+    marginBottom: 15,
+    marginHorizontal: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 8,
-    padding: 12,
+    backgroundColor: "#6a1b9a", // Purple background color for the button
+    elevation: 2,
+    alignSelf: "stretch",
     alignItems: "center",
-    marginTop: 20,
   },
   addButtonText: {
     fontSize: 16,

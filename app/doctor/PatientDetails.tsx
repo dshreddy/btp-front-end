@@ -18,6 +18,7 @@ import axios from "axios";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import AddGameModal from "@/components/doctor/PatientDetails/AddGameModal";
 import { LineChart } from "react-native-chart-kit";
+import { Ionicons } from "@expo/vector-icons";
 
 const PatientDetails = () => {
   const router = useRouter();
@@ -61,6 +62,13 @@ const PatientDetails = () => {
       setLoading(false);
     }
   };
+  const handleUpdateMedicine = (medicine) => {
+    console.log("medicine update");
+  };
+
+  const handleDeleteMedicine = async (medicineId) => {
+    console.log("medicine delete");
+  };
 
   useEffect(() => {
     fetchData();
@@ -77,18 +85,36 @@ const PatientDetails = () => {
           contentContainerStyle={styles.flatListContainer}
           renderItem={({ item }) => (
             <View style={styles.medicineCard}>
-              <Text style={styles.medicineName}>{item.medicine.name}</Text>
-              {item.medicine.image && (
-                <Image
-                  source={{ uri: item.medicine.image }}
-                  style={styles.medicineImage}
-                />
-              )}
-              <Text>Start Date: {new Date(item.startDate).toDateString()}</Text>
-              <Text>End Date: {new Date(item.endDate).toDateString()}</Text>
-              <Text>{item.mealTime} meal</Text>
-              <Text>Dosage: {item.dosage}</Text>
-              <Text>Dosage Times: {item.dosageTimes.join(", ")}</Text>
+              <View style={styles.medicineLeftColumn}>
+                <Text style={styles.medicineName}>{item.medicine.name}</Text>
+                {item.medicine.image && (
+                  <Image
+                    source={{ uri: item.medicine.image }}
+                    style={styles.medicineImage}
+                  />
+                )}
+              </View>
+              <View style={styles.medicineRightColumn}>
+                <Text>
+                  Start Date: {new Date(item.startDate).toDateString()}
+                </Text>
+                <Text>End Date: {new Date(item.endDate).toDateString()}</Text>
+                <Text>{item.mealTime} meal</Text>
+                <Text>Dosage: {item.dosage}</Text>
+                <Text>Dosage Times: {item.dosageTimes.join(", ")}</Text>
+              </View>
+              <View style={styles.actionButtonsContainer}>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={() => handleDeleteMedicine(item._id)}
+                >
+                  <Ionicons
+                    name="trash"
+                    size={20}
+                    color="#e53935" // Red for delete
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
           )}
           ListEmptyComponent={
@@ -117,9 +143,23 @@ const PatientDetails = () => {
         data={games}
         contentContainerStyle={styles.flatListContainer}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={{ uri: item.logo }} style={styles.cardImage} />
-            <Text style={styles.cardText}>{item.name}</Text>
+          <View style={styles.medicineCard}>
+            <View style={styles.medicineLeftColumn}>
+              <Image source={{ uri: item.logo }} style={styles.cardImage} />
+              <Text style={styles.cardText}>{item.name}</Text>
+            </View>
+            <View style={styles.actionButtonsContainer}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => handleDeleteMedicine(item._id)}
+              >
+                <Ionicons
+                  name="trash"
+                  size={20}
+                  color="#e53935" // Red for delete
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         )}
         keyExtractor={(item) => item._id} // Ensure each item has a unique key
@@ -167,16 +207,15 @@ const PatientDetails = () => {
                     },
                   ],
                 }}
-                width={Dimensions.get("window").width - 40}
+                width={Dimensions.get("window").width * 0.87}
                 height={220}
                 chartConfig={{
                   backgroundColor: "#1E2923",
-                  backgroundGradientFrom: "#08130D",
-                  backgroundGradientTo: "#08130D",
+                  backgroundGradientFrom: "#F5F9FA",
+                  backgroundGradientTo: "#FFFFFF",
                   decimalPlaces: 0,
-                  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-                  labelColor: (opacity = 1) =>
-                    `rgba(255, 255, 255, ${opacity})`,
+                  color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                   style: {
                     borderRadius: 16,
                   },
@@ -190,6 +229,7 @@ const PatientDetails = () => {
                 style={{
                   marginVertical: 8,
                   borderRadius: 16,
+                  paddingLeft: 0,
                 }}
               />
             </View>
@@ -350,7 +390,33 @@ const styles = StyleSheet.create({
   indicator: {
     height: 1,
   },
-  medicineCard: { marginBottom: 10, padding: 10, backgroundColor: "#fff" },
+  medicineCard: {
+    marginVertical: 5, // Vertical margin between each card
+    padding: 15, // Padding inside the card
+    backgroundColor: "#fff", // White background for the card
+    borderRadius: 8, // Rounded corners
+    shadowColor: "#000", // Shadow for elevation
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 2,
+    marginHorizontal: 10, // Horizontal margin for spacing the card from other elements
+    flexDirection: "row", // Row direction for two columns inside the card
+    alignItems: "flex-start", // Align items to the top of the card
+    justifyContent: "space-between", // Space between the two columns
+    width: "94%",
+    marginEnd: 10,
+  },
+  medicineLeftColumn: {
+    flex: 1, // Take up 1/2 of the space in the row
+    justifyContent: "flex-start",
+    alignItems: "flex-start", // Align content to the left in the column
+  },
+  medicineRightColumn: {
+    flex: 2, // Take up the other 1/2 of the space in the row
+    justifyContent: "flex-start",
+    alignItems: "flex-start", // Align content to the left in the column
+  },
   medicineName: { fontSize: 16, fontWeight: "bold" },
   medicineImage: { width: 50, height: 50, marginTop: 5 },
   card: {
@@ -390,6 +456,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
     textAlign: "center",
+  },
+  actionButtonsContainer: {
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  actionButton: {
+    marginLeft: 10,
+    padding: 5,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

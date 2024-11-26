@@ -12,6 +12,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import axios from "axios";
 import { AuthContext } from "@/context/authContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const Patients = () => {
   const router = useRouter();
@@ -71,25 +72,37 @@ const Patients = () => {
           <FlatList
             data={filteredPatients}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.card}
-                onPress={() =>
-                  router.push({
-                    pathname: "/doctor/PatientDetails",
-                    params: item,
-                  })
-                }
-              >
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>Name:</Text> {item.name}
-                </Text>
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>DOB:</Text> {item.dob}
-                </Text>
-                <Text style={styles.cardText}>
-                  <Text style={styles.label}>Gender:</Text> {item.gender}
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.card}>
+                <View style={styles.detailsContainer}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/doctor/PatientDetails",
+                        params: item,
+                      })
+                    }
+                  >
+                    <Text style={styles.cardText}>
+                      <Text style={styles.label}>Name:</Text> {item.name}
+                    </Text>
+                    <Text style={styles.cardText}>
+                      <Text style={styles.label}>DOB:</Text> {item.dob}
+                    </Text>
+                    <Text style={styles.cardText}>
+                      <Text style={styles.label}>Gender:</Text> {item.gender}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.iconContainer}>
+                  {/* Delete Icon */}
+                  <TouchableOpacity
+                    style={styles.iconButton}
+                    onPress={() => alert("Delete pressed for " + item.name)}
+                  >
+                    <Ionicons name="trash-outline" size={24} color="#f44336" />
+                  </TouchableOpacity>
+                </View>
+              </View>
             )}
             ListEmptyComponent={
               <Text style={styles.noPatients}>No patients found.</Text>
@@ -133,6 +146,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     marginBottom: 10,
+    flexDirection: "row", // Arrange details and icons side by side
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  detailsContainer: {
+    flex: 3, // Take more space for details
+    flexDirection: "column", // Arrange name, dob, gender in a column
   },
   cardText: {
     fontSize: 16,
@@ -145,6 +165,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#555",
     marginTop: 20,
+  },
+  iconContainer: {
+    flex: 1, // Take less space for icons
+    flexDirection: "column", // Arrange icons in a column
+    justifyContent: "space-evenly", // Space out the icons vertically
+    alignItems: "center", // Center align icons
+  },
+  iconButton: {
+    marginLeft: 10,
+    marginBottom: 10,
   },
   modalContainer: {
     flex: 1,

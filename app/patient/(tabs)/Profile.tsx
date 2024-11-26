@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import { LineChart } from "react-native-chart-kit";
 import axios from "axios";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Profile = () => {
   const router = useRouter();
@@ -52,84 +53,93 @@ const Profile = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>My Profile</Text>
+    <LinearGradient
+      colors={["#C485F7", "#9459C6", "#662F97"]}
+      style={styles.gradientBackground}
+    >
+      <ScrollView style={styles.container}>
+        <Text style={styles.header}>My Profile</Text>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={[styles.input, styles.disabledInput]}
-          value={name}
-          editable={false}
-          placeholder="Enter your name"
-        />
+        <View style={styles.form}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={[styles.input, styles.disabledInput]}
+            value={name}
+            editable={false}
+            placeholder="Enter your name"
+          />
 
-        <Text style={styles.label}>Mobile</Text>
-        <TextInput
-          style={[styles.input, styles.disabledInput]}
-          value={mobile}
-          editable={false}
-          placeholder="Enter your mobile number"
-        />
-      </View>
+          <Text style={styles.label}>Mobile</Text>
+          <TextInput
+            style={[styles.input, styles.disabledInput]}
+            value={mobile}
+            editable={false}
+            placeholder="Enter your mobile number"
+          />
+        </View>
 
-      <Text style={styles.subHeader}>Activity Data</Text>
-      {loading ? (
-        <ActivityIndicator size="large" color="#4CAF50" />
-      ) : (
-        activityData.map((activity, index) => (
-          <View key={index} style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>{activity.gameName}</Text>
-            <LineChart
-              data={{
-                labels: Array.from({ length: activity.scores.length }, (_, i) =>
-                  i === 0 ? `Attempt ${i + 1}` : `${i + 1}`
-                ),
-                datasets: [
-                  {
-                    data: activity.scores,
+        <Text style={styles.subHeader}>Activity Data</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#4CAF50" />
+        ) : (
+          activityData.map((activity, index) => (
+            <View key={index} style={styles.chartContainer}>
+              <Text style={styles.chartTitle}>{activity.gameName}</Text>
+              <LineChart
+                data={{
+                  labels: Array.from(
+                    { length: activity.scores.length },
+                    (_, i) => (i === 0 ? `Attempt ${i + 1}` : `${i + 1}`)
+                  ),
+                  datasets: [
+                    {
+                      data: activity.scores,
+                    },
+                  ],
+                }}
+                width={Dimensions.get("window").width - 40}
+                height={220}
+                chartConfig={{
+                  backgroundColor: "#1E2923",
+                  backgroundGradientFrom: "#F5F9FA",
+                  backgroundGradientTo: "#FFFFFF",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
                   },
-                ],
-              }}
-              width={Dimensions.get("window").width - 40}
-              height={220}
-              chartConfig={{
-                backgroundColor: "#1E2923",
-                backgroundGradientFrom: "#08130D",
-                backgroundGradientTo: "#08130D",
-                decimalPlaces: 0,
-                color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                style: {
+                  propsForDots: {
+                    r: "4",
+                    strokeWidth: "2",
+                    stroke: "#ffa726",
+                  },
+                }}
+                bezier
+                style={{
+                  marginVertical: 8,
                   borderRadius: 16,
-                },
-                propsForDots: {
-                  r: "4",
-                  strokeWidth: "2",
-                  stroke: "#ffa726",
-                },
-              }}
-              bezier
-              style={{
-                marginVertical: 8,
-                borderRadius: 16,
-              }}
-            />
-          </View>
-        ))
-      )}
+                  paddingLeft: 0,
+                }}
+              />
+            </View>
+          ))
+        )}
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  gradientBackground: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
     padding: 20,
   },
   header: {
@@ -173,14 +183,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   logoutButton: {
-    backgroundColor: "#f44336",
-    padding: 15,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    marginBottom: 8,
+    marginHorizontal: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderRadius: 8,
+    backgroundColor: "#F8F8F8",
+    elevation: 2,
+    alignSelf: "stretch",
     alignItems: "center",
-    marginTop: 20,
   },
   logoutText: {
-    color: "#fff",
+    color: "#6a1b9a",
     fontSize: 16,
     fontWeight: "bold",
   },

@@ -14,6 +14,8 @@ export default function PatientTabsLayout() {
             iconName = "game-controller";
           } else if (route.name === "Zen") {
             iconName = "happy";
+          } else if (route.name === "Medicines") {
+            iconName = "medkit";
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -28,6 +30,7 @@ export default function PatientTabsLayout() {
     >
       <Tabs.Screen name="GameHub" />
       <Tabs.Screen name="Zen" />
+      <Tabs.Screen name="Medicines" />
       <Tabs.Screen name="Profile" />
     </Tabs>
   );
