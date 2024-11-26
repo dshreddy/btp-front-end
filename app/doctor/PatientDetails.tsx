@@ -62,12 +62,55 @@ const PatientDetails = () => {
       setLoading(false);
     }
   };
-  const handleUpdateMedicine = (medicine) => {
-    console.log("medicine update");
-  };
 
   const handleDeleteMedicine = async (medicineId) => {
-    console.log("medicine delete");
+    const patientId = patient._id;
+
+    try {
+      const response = await axios.post("/patient/deleteMedicine", {
+        patientId,
+        medicineId,
+      });
+
+      if (response.data.success) {
+        // Update the local medicines list
+        setMedicines((prevMedicines) =>
+          prevMedicines.filter(
+            (medicine) => medicine.medicine._id !== medicineId
+          )
+        );
+        alert("Medicine deleted successfully!");
+      } else {
+        alert("Failed to delete medicine. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting medicine:", error);
+      alert("An error occurred while deleting the medicine. Please try again.");
+    }
+  };
+
+  const handleDeleteGame = async (gameId) => {
+    const patientId = patient._id;
+
+    try {
+      const response = await axios.post("/patient/deleteGame", {
+        patientId,
+        gameId,
+      });
+
+      if (response.data.success) {
+        // Update the local games list
+        setGames((prevGames) =>
+          prevGames.filter((game) => game._id !== gameId)
+        );
+        alert("Game deleted successfully!");
+      } else {
+        alert("Failed to delete game. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting game:", error);
+      alert("An error occurred while deleting the game. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -106,7 +149,7 @@ const PatientDetails = () => {
               <View style={styles.actionButtonsContainer}>
                 <TouchableOpacity
                   style={styles.actionButton}
-                  onPress={() => handleDeleteMedicine(item._id)}
+                  onPress={() => handleDeleteMedicine(item.medicine._id)}
                 >
                   <Ionicons
                     name="trash"
@@ -151,7 +194,7 @@ const PatientDetails = () => {
             <View style={styles.actionButtonsContainer}>
               <TouchableOpacity
                 style={styles.actionButton}
-                onPress={() => handleDeleteMedicine(item._id)}
+                onPress={() => handleDeleteGame(item._id)}
               >
                 <Ionicons
                   name="trash"

@@ -51,6 +51,28 @@ const Patients = () => {
     patient.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const handleDeletePatient = async (patientId) => {
+    try {
+      const response = await axios.post(`/doctor/deletePatient`, {
+        doctorId: doctor._id, // Pass the current doctor's ID
+        patientId, // Pass the selected patient's ID
+      });
+
+      if (response.data.success) {
+        // Remove the deleted patient from the local state
+        setPatients((prevPatients) =>
+          prevPatients.filter((patient) => patient._id !== patientId)
+        );
+        alert("Patient deleted successfully!");
+      } else {
+        alert(response.data.message || "Failed to delete patient.");
+      }
+    } catch (error) {
+      console.error("Error deleting patient:", error);
+      alert("An error occurred while deleting the patient. Please try again.");
+    }
+  };
+
   return (
     <LinearGradient
       colors={["#C485F7", "#C485F7", "#9459C6", "#9459C6", "#38006b"]} // Adjust colors to match your design
@@ -97,7 +119,7 @@ const Patients = () => {
                   {/* Delete Icon */}
                   <TouchableOpacity
                     style={styles.iconButton}
-                    onPress={() => alert("Delete pressed for " + item.name)}
+                    onPress={() => handleDeletePatient(item._id)}
                   >
                     <Ionicons name="trash-outline" size={24} color="#f44336" />
                   </TouchableOpacity>
